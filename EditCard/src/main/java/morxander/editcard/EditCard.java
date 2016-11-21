@@ -129,4 +129,8 @@ public class EditCard extends EditText {
         if (getCardNumber().matches(CardPattern.JCB_VALID)) return true;
         return false;
     }
+
+    public String getCardType(){
+        return type;
+    }
 }
