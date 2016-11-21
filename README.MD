@@ -1,6 +1,6 @@
 # EditCard
 
-![EditCard](http://imgur.com/a/Ta8IM)
+![EditCard](http://i.imgur.com/xKAc3GE.gif)
 
 Custom EditText For Android To Enter Credit Card Numbers
 
