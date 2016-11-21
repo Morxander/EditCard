@@ -9,7 +9,7 @@ Custom EditText For Android To Enter Credit Card Numbers
 Download via Gradle:
 
 ```gradle
-compile ''
+compile 'morxander.editcard:EditCard:1.0.0'
 ```
 
 ### Usage
@@ -29,7 +29,14 @@ edit_card.isValid(); // Is the card number valid
 edit_card.getCardType(); // Get the card type
 ```
 
+For now we only support the following card types :
 
+* VISA
+* MASTERCARD
+* American Express
+* DISCOVER
+* JCB
+* Discover
 
 ### License 
 GNU GENERAL PUBLIC LICENSE 3
