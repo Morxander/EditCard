@@ -1,4 +1,5 @@
 # EditCard
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EditCard-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4704)
 
 ![EditCard](http://i.imgur.com/xKAc3GE.gif)
 
