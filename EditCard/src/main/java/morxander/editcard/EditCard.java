@@ -113,6 +113,7 @@ public class EditCard extends EditText {
             type = "Diners_Club";
         } else {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.card, 0);
+            type = "UNKNOWN";
         }
     }
 
