@@ -10,7 +10,7 @@ Custom EditText For Android To Enter Credit Card Numbers
 Download via Gradle:
 
 ```gradle
-compile 'morxander.editcard:EditCard:1.0.0'
+compile 'morxander.editcard:EditCard:1.0.1'
 ```
 
 ### Usage
