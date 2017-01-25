@@ -7,18 +7,22 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
 import java.util.regex.Pattern;
 
+import static android.R.attr.start;
+
 /**
- * Created by morxander on 11/19/16.
+ * Created by Mac on 11/19/16 PM 2:24
  */
 
 public class EditCard extends EditText {
 
-    String type = "UNKNOWN";
+    String type = "";
+    CardNumberTransformationMethod cardNumberTransformationMethod;
 
     public EditCard(Context context) {
         super(context);
@@ -44,35 +48,79 @@ public class EditCard extends EditText {
     private void addMagic() {
         // Changing the icon when it's empty
         changeIcon();
+        
+        cardNumberTransformationMethod = CardNumberTransformationMethod.getInstance();
+        setTransformationMethod(cardNumberTransformationMethod);
+        
         // Adding the TextWatcher
         addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                if (textWatcher != null) textWatcher.beforeTextChanged(s, start,count, after);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int position, int before, int action) {
-                if (action == 1) {
-                    if (type.equals("UNKNOWN") || type.equals("Visa") || type.equals("Discover") || type.equals("JCB")) {
-                        if (position == 3 || position == 8 || position == 13) {
-                            if (!s.toString().endsWith("-")) {
-                                append("-");
-                            }
+                changeIcon(s.toString());
+
+                boolean isChaged    = false;
+                String  text         = getText().toString();
+                String  onlyNum      = getText().toString().replaceAll("-", "");
+
+                StringBuilder stringBuilder = new StringBuilder(onlyNum);
+
+                if (type.equals("UNKNOWN") || type.equals("MasterCard") || type.equals("Visa") || type.equals("Discover") || type.equals("JCB")|| type.equals("Union_Pay")) {
+                    if (text.length() > 4) {
+                        if ('-' != text.charAt(4)) {
+                            isChaged = true;
                         }
-                    } else if (type.equals("American_Express") || type.equals("Diners_Club")) {
-                        if (position == 3 || position == 10) {
-                            if (!s.toString().endsWith("-")) {
-                                append("-");
+                        stringBuilder.insert(4, "-");
+                        if (text.length() > 9) {
+                            if ('-' != text.charAt(9)) {
+                                isChaged = true;
+                            }
+                            stringBuilder.insert(9, "-");
+                            if (text.length() > 14) {
+                                if ('-' != text.charAt(14)) {
+                                    isChaged = true;
+                                }
+                                stringBuilder.insert(14, "-");
                             }
                         }
                     }
+                    setFilters(new InputFilter[]{new InputFilter.LengthFilter(19)});
+                    cardNumberTransformationMethod.setType(CardNumberTransformationMethod.NORMAL);
+                } else if (type.equals("American_Express") || type.equals("Diners_Club")) {
+                    if (type.equals("Diners_Club")) {
+                        setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
+                        cardNumberTransformationMethod.setType(CardNumberTransformationMethod.DINERS_CLUB);
+                    }else {
+                        setFilters(new InputFilter[]{new InputFilter.LengthFilter(17)});
+                        cardNumberTransformationMethod.setType(CardNumberTransformationMethod.AMERICAN_EXPRESS);
+                    }
+                    if (text.length() > 4) {
+                        if ('-' != text.charAt(4)) {
+                            isChaged = true;
+                        }
+                        stringBuilder.insert(4, "-");
+                        if (text.length() > 11) {
+                            if ('-' != text.charAt(11)) {
+                                isChaged = true;
+                            }
+                            stringBuilder.insert(11, "-");
+                        }
+                    }
+                }
+                if (isChaged) {
+                    setText(stringBuilder.toString());
+                }else{
+                    setSelection(length());
                 }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                changeIcon();
+                if (textWatcher != null) textWatcher.afterTextChanged(editable);
             }
         });
         // The input filters
@@ -92,11 +140,17 @@ public class EditCard extends EditText {
     }
 
     private void changeIcon() {
-        String s = getText().toString().replace("-", "").trim();
+        String s = getText().toString();
+        changeIcon(s);
+    }
+
+    // 2017.01.25
+    private void changeIcon(String s) {
+        s = s.replaceAll("-", "").trim();
         if (s.startsWith("4") || s.matches(CardPattern.VISA)) {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.vi, 0);
             type = "Visa";
-        } else if (s.matches(CardPattern.MASTERCARD_SHORTER) || s.matches(CardPattern.MASTERCARD_SHORT) || s.matches(CardPattern.MASTERCARD)) {
+        } else if (s.matches(CardPattern.MASTERCARD_SHORTER)) {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.mc, 0);
             type = "MasterCard";
         } else if (s.matches(CardPattern.AMERICAN_EXPRESS)) {
@@ -105,12 +159,15 @@ public class EditCard extends EditText {
         } else if (s.matches(CardPattern.DISCOVER_SHORT) || s.matches(CardPattern.DISCOVER)) {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ds, 0);
             type = "Discover";
-        } else if (s.matches(CardPattern.JCB_SHORT) || s.matches(CardPattern.JCB)) {
+        } else if (s.matches(CardPattern.JCB_SHORT)) {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.jcb, 0);
             type = "JCB";
-        } else if (s.matches(CardPattern.DINERS_CLUB_SHORT) || s.matches(CardPattern.DINERS_CLUB)) {
+        } else if (s.matches(CardPattern.DINERS_CLUB_SHORT)) {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.dc, 0);
             type = "Diners_Club";
+        } else if (s.matches(CardPattern.UNION_PAY_SHORT)) {
+            setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.un, 0);
+            type = "Union_Pay";
         } else {
             setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.card, 0);
             type = "UNKNOWN";
@@ -128,10 +185,32 @@ public class EditCard extends EditText {
         if (getCardNumber().matches(CardPattern.DISCOVER_VALID)) return true;
         if (getCardNumber().matches(CardPattern.DINERS_CLUB_VALID)) return true;
         if (getCardNumber().matches(CardPattern.JCB_VALID)) return true;
+        // TODO: 2017. 1. 25. Need to add union-pay valid check
         return false;
     }
-
+    // 2017.01.25
     public String getCardType(){
         return type;
+    }
+
+    // 2017.01.25    
+    TextWatcher textWatcher;
+    
+    // 2017.01.25
+    public void addCardTextChangedListener(TextWatcher textWatcher) {
+        this.textWatcher = textWatcher;
+    }
+
+    // 2017.01.25
+    public void removeCardNumberTransformationMethod(TransformationMethod method) {
+       setTransformationMethod(null);
+    }
+
+    // 2017.01.25
+    public void setCardNumberTransformationMethod(TransformationMethod method) {
+        if (cardNumberTransformationMethod == null) {
+            cardNumberTransformationMethod = CardNumberTransformationMethod.getInstance();
+        }
+        setTransformationMethod(cardNumberTransformationMethod);
     }
 }
