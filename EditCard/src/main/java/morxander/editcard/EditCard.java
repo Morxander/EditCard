@@ -21,8 +21,10 @@ import static android.R.attr.start;
 
 public class EditCard extends EditText {
 
-    String type = "";
-    CardNumberTransformationMethod cardNumberTransformationMethod;
+    private String                              type                                = "";
+    public  CardNumberTransformationMethod      cardNumberTransformationMethod;
+    // 2017.01.25
+    public  TextWatcher                         textWatcher;
 
     public EditCard(Context context) {
         super(context);
@@ -192,9 +194,6 @@ public class EditCard extends EditText {
     public String getCardType(){
         return type;
     }
-
-    // 2017.01.25    
-    TextWatcher textWatcher;
     
     // 2017.01.25
     public void addCardTextChangedListener(TextWatcher textWatcher) {
