@@ -38,6 +38,7 @@ For now we only support the following card types :
 * DISCOVER
 * JCB
 * Discover
+* Union
 
 ### License 
 GNU GENERAL PUBLIC LICENSE 3
